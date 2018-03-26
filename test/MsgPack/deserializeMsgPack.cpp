@@ -17,4 +17,14 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
     REQUIRE(variant.is<char*>());
     REQUIRE(variant.as<char*>() == NULL);
   }
+
+  SECTION("true") {
+    uint8_t input[] = {0xc3};
+
+    bool success = deserializeMsgPack(variant, input);
+
+    REQUIRE(success == true);
+    REQUIRE(variant.is<bool>());
+    REQUIRE(variant.as<bool>() == true);
+  }
 }
