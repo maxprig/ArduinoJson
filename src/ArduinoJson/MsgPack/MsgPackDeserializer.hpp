@@ -13,6 +13,10 @@ bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
       variant = static_cast<char*>(0);
       return true;
 
+    case 0xc2:
+      variant = false;
+      return true;
+
     case 0xc3:
       variant = true;
       return true;
