@@ -8,6 +8,12 @@ namespace ArduinoJson {
 
 bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
   uint8_t c = input[0];
+
+  if ((c & 128) == 0) {
+    variant = c & 127;
+    return true;
+  }
+
   switch (c) {
     case 0xc0:
       variant = static_cast<char*>(0);
