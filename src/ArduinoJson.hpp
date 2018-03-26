@@ -7,6 +7,7 @@
 #include "ArduinoJson/DynamicJsonArray.hpp"
 #include "ArduinoJson/DynamicJsonObject.hpp"
 #include "ArduinoJson/DynamicJsonVariant.hpp"
+#include "ArduinoJson/MsgPack/MsgPackDeserializer.hpp"
 #include "ArduinoJson/StaticJsonArray.hpp"
 #include "ArduinoJson/StaticJsonObject.hpp"
 #include "ArduinoJson/StaticJsonVariant.hpp"
