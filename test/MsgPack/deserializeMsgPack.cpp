@@ -41,7 +41,7 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   }
 
   SECTION("int format family") {
-    SECTION("positive fixnum stores 7-bit positive integer") {
+    SECTION("7-bit positive integer") {
       SECTION("0") {
         uint8_t input[] = {0x00};
 
@@ -60,6 +60,28 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
         REQUIRE(success == true);
         REQUIRE(variant.is<int>());
         REQUIRE(variant.as<int>() == 127);
+      }
+    }
+
+    SECTION("5-bit negative integer") {
+      SECTION("-32") {
+        uint8_t input[] = {0xe0};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == -32);
+      }
+
+      SECTION("-1") {
+        uint8_t input[] = {0xff};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == -1);
       }
     }
   }
