@@ -106,5 +106,37 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
         REQUIRE(variant.as<int>() == 255);
       }
     }
+
+    SECTION("16-bit big-endian unsigned integer") {
+      SECTION("0") {
+        uint8_t input[] = {0xcd, 0x00, 0x00};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == 0);
+      }
+
+      SECTION("65535") {
+        uint8_t input[] = {0xcd, 0xFF, 0xFF};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == 65535);
+      }
+
+      SECTION("12345") {
+        uint8_t input[] = {0xcd, 0x30, 0x39};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == 12345);
+      }
+    }
   }
 }

@@ -6,7 +6,7 @@
 
 namespace ArduinoJson {
 
-bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
+inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
   uint8_t c = *input++;
 
   if ((c & 0x80) == 0) {
@@ -33,8 +33,15 @@ bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
       return true;
 
     case 0xcc:
-      variant = static_cast<uint8_t>(*input++);
+      variant = *input++;
       return true;
+
+    case 0xcd: {
+      uint8_t byte1 = *input++;
+      uint8_t byte2 = *input++;
+      variant = (byte1 << 8) | byte2;
+      return true;
+    }
 
     default:
       return false;
