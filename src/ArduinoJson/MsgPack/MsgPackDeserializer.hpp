@@ -6,6 +6,16 @@
 
 namespace ArduinoJson {
 
+template <typename T, uint8_t size>
+inline T readInteger(uint8_t*& input) {
+  T value = *input++;
+  for (uint8_t i = 1; i < size; i++) {
+    value = static_cast<T>(value << 8);
+    value = static_cast<T>(value | *input++);
+  }
+  return value;
+}
+
 inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
   uint8_t c = *input++;
 
@@ -37,33 +47,21 @@ inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
       return true;
 
     case 0xcd: {
-      uint8_t byte1 = *input++;
-      uint8_t byte2 = *input++;
-      variant = (byte1 << 8) | byte2;
+      variant = readInteger<uint16_t, 2>(input);
       return true;
     }
 
     case 0xce: {
-      uint32_t value = *input++;
-      for (uint8_t i = 1; i < 4; i++) {
-        value <<= 8;
-        value |= *input++;
-      }
-      variant = value;
+      variant = readInteger<uint32_t, 4>(input);
       return true;
     }
 
     case 0xcf: {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-      uint64_t value = *input++;
+      variant = readInteger<uint64_t, 8>(input);
 #else
-      uint32_t value = *input++;
+      variant = readInteger<uint32_t, 8>(input);
 #endif
-      for (uint8_t i = 1; i < 8; i++) {
-        value <<= 8;
-        value |= *input++;
-      }
-      variant = value;
       return true;
     }
 
