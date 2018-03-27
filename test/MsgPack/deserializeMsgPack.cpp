@@ -140,34 +140,87 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
     }
 
     SECTION("32-bit big-endian unsigned integer") {
-      SECTION("0") {
+      SECTION("0x00000000") {
         uint8_t input[] = {0xce, 0x00, 0x00, 0x00, 0x00};
 
         bool success = deserializeMsgPack(variant, input);
 
         REQUIRE(success == true);
         REQUIRE(variant.is<uint32_t>());
-        REQUIRE(variant.as<uint32_t>() == 0);
+        REQUIRE(variant.as<uint32_t>() == 0x00000000);
       }
 
-      SECTION("4294967295") {
+      SECTION("0xFFFFFFFF") {
         uint8_t input[] = {0xce, 0xFF, 0xFF, 0xFF, 0xFF};
 
         bool success = deserializeMsgPack(variant, input);
 
         REQUIRE(success == true);
         REQUIRE(variant.is<uint32_t>());
-        REQUIRE(variant.as<uint32_t>() == 4294967295UL);
+        REQUIRE(variant.as<uint32_t>() == 0xFFFFFFFF);
       }
 
-      SECTION("1234567890") {
-        uint8_t input[] = {0xce, 0x49, 0x96, 0x02, 0xd2};
+      SECTION("0x12345678") {
+        uint8_t input[] = {0xce, 0x12, 0x34, 0x56, 0x78};
 
         bool success = deserializeMsgPack(variant, input);
 
         REQUIRE(success == true);
         REQUIRE(variant.is<uint32_t>());
-        REQUIRE(variant.as<uint32_t>() == 1234567890UL);
+        REQUIRE(variant.as<uint32_t>() == 0x12345678);
+      }
+    }
+
+    SECTION("64-bit big-endian unsigned integer") {
+      SECTION("0x0000000000000000") {
+        uint8_t input[] = {0xcf, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+        REQUIRE(variant.is<uint64_t>());
+        REQUIRE(variant.as<uint64_t>() == 0);
+#else
+        REQUIRE(variant.is<uint32_t>());
+        REQUIRE(variant.as<uint32_t>() == 0);
+#endif
+      }
+
+      SECTION("0xFFFFFFFFFFFFFFFF") {
+        uint8_t input[] = {0xcf, 0xFF, 0xFF, 0xFF, 0xFF,
+                           0xFF, 0xFF, 0xFF, 0xFF};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+        REQUIRE(variant.is<uint64_t>());
+        REQUIRE(variant.as<uint64_t>() == 0xFFFFFFFFFFFFFFFF);
+#else
+        REQUIRE(variant.is<uint32_t>());
+        REQUIRE(variant.as<uint32_t>() == 0xFFFFFFFF);
+#endif
+      }
+
+      SECTION("0x123456789ABCDEF0") {
+        uint8_t input[] = {0xcf, 0x12, 0x34, 0x56, 0x78,
+                           0x9A, 0xBC, 0xDE, 0xF0};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+        REQUIRE(variant.is<uint64_t>());
+        REQUIRE(variant.as<uint64_t>() == 0x123456789ABCDEF0);
+#else
+        REQUIRE(variant.is<uint32_t>());
+        REQUIRE(variant.as<uint32_t>() == 0x9ABCDEF0);
+#endif
       }
     }
   }

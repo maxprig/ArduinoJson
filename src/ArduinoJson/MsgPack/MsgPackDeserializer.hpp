@@ -44,11 +44,26 @@ inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
     }
 
     case 0xce: {
-      uint8_t byte1 = *input++;
-      uint8_t byte2 = *input++;
-      uint8_t byte3 = *input++;
-      uint8_t byte4 = *input++;
-      variant = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+      uint32_t value = *input++;
+      for (uint8_t i = 1; i < 4; i++) {
+        value <<= 8;
+        value |= *input++;
+      }
+      variant = value;
+      return true;
+    }
+
+    case 0xcf: {
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+      uint64_t value = *input++;
+#else
+      uint32_t value = *input++;
+#endif
+      for (uint8_t i = 1; i < 8; i++) {
+        value <<= 8;
+        value |= *input++;
+      }
+      variant = value;
       return true;
     }
 
