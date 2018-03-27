@@ -43,6 +43,15 @@ inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
       return true;
     }
 
+    case 0xce: {
+      uint8_t byte1 = *input++;
+      uint8_t byte2 = *input++;
+      uint8_t byte3 = *input++;
+      uint8_t byte4 = *input++;
+      variant = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+      return true;
+    }
+
     default:
       return false;
   }
