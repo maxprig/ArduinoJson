@@ -58,13 +58,13 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 
   SECTION("64-bit unsigned integer") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-    check<uint64_t>("\xcf\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint64_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0);
     check<uint64_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFFFFFFFFFF);
-    check<uint64_t>("\xcf\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
+    check<uint64_t>("\xCF\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
 #else
-    check<uint32_t>("\xcf\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint32_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0);
     check<uint32_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
-    check<uint32_t>("\xcf\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x9ABCDEF0);
+    check<uint32_t>("\xCF\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x9ABCDEF0);
 #endif
   }
 
@@ -74,14 +74,26 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   }
 
   SECTION("16-bit signed integer") {
-    check("\xd1\x00\x00", 0);
-    check("\xd1\xFF\xFF", -1);
-    check("\xd1\xcf\xc7", -12345);
+    check("\xD1\x00\x00", 0);
+    check("\xD1\xFF\xFF", -1);
+    check("\xD1\xCF\xC7", -12345);
   }
 
   SECTION("32-bit signed integer") {
     check("\xD2\x00\x00\x00\x00", 0);
     check("\xD2\xFF\xFF\xFF\xFF", -1);
     check("\xD2\xB6\x69\xFD\x2E", -1234567890);
+  }
+
+  SECTION("64-bit signed integer") {
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+    check<uint64_t>("\xD3\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint64_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFFFFFFFFFF);
+    check<uint64_t>("\xD3\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
+#else
+    check<uint32_t>("\xD3\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint32_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
+    check<uint32_t>("\xD3\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x9ABCDEF0);
+#endif
   }
 }

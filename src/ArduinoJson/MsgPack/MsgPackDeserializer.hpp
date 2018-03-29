@@ -74,6 +74,14 @@ inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
       variant = readInteger<int32_t, 4>(input);
       return true;
 
+    case 0xd3:
+#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
+      variant = readInteger<int64_t, 8>(input);
+#else
+      variant = readInteger<int32_t, 8>(input);
+#endif
+      return true;
+
     default:
       return false;
   }
