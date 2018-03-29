@@ -7,7 +7,7 @@
 namespace ArduinoJson {
 
 template <typename T, uint8_t size>
-inline T readInteger(uint8_t*& input) {
+inline T readInteger(const uint8_t*& input) {
   T value = *input++;
   for (uint8_t i = 1; i < size; i++) {
     value = static_cast<T>(value << 8);
@@ -16,7 +16,7 @@ inline T readInteger(uint8_t*& input) {
   return value;
 }
 
-inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
+inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
   uint8_t c = *input++;
 
   if ((c & 0x80) == 0) {
@@ -73,5 +73,9 @@ inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
     default:
       return false;
   }
+}
+
+inline bool deserializeMsgPack(JsonVariant& variant, const char* input) {
+  return deserializeMsgPack(variant, reinterpret_cast<const uint8_t*>(input));
 }
 }  // namespace ArduinoJson
