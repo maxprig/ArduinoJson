@@ -96,4 +96,9 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
     check<uint32_t>("\xD3\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x9ABCDEF0);
 #endif
   }
+
+  SECTION("single precision floating point") {
+    check("\xca\x00\x00\x00\x00", 0.0f);
+    check("\xca\x40\x48\xF5\xC3", 3.14f);
+  }
 }

@@ -16,6 +16,23 @@ inline T readInteger(const uint8_t*& input) {
   return value;
 }
 
+inline float readFloat(const uint8_t*& input) {
+  float value;
+  uint8_t* p = reinterpret_cast<uint8_t*>(&value);
+#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
+  p[3] = *input++;
+  p[2] = *input++;
+  p[1] = *input++;
+  p[0] = *input++;
+#else
+  p[0] = *input++;
+  p[1] = *input++;
+  p[2] = *input++;
+  p[3] = *input++;
+#endif
+  return value;
+}
+
 inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
   uint8_t c = *input++;
 
@@ -80,6 +97,10 @@ inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
 #else
       variant = readInteger<int32_t, 8>(input);
 #endif
+      return true;
+
+    case 0xca:
+      variant = readFloat(input);
       return true;
 
     default:
