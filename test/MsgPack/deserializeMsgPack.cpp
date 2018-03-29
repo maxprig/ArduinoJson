@@ -78,4 +78,10 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
     check("\xd1\xFF\xFF", -1);
     check("\xd1\xcf\xc7", -12345);
   }
+
+  SECTION("32-bit signed integer") {
+    check("\xD2\x00\x00\x00\x00", 0);
+    check("\xD2\xFF\xFF\xFF\xFF", -1);
+    check("\xD2\xB6\x69\xFD\x2E", -1234567890);
+  }
 }
