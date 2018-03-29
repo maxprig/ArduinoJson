@@ -66,6 +66,10 @@ inline bool deserializeMsgPack(JsonVariant& variant, uint8_t* input) {
       variant = readInteger<int8_t, 1>(input);
       return true;
 
+    case 0xd1:
+      variant = readInteger<int16_t, 2>(input);
+      return true;
+
     default:
       return false;
   }
