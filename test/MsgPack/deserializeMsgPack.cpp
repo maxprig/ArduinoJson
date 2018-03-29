@@ -19,131 +19,63 @@ void check(const char* input, T expected) {
 TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   DynamicJsonVariant variant;
 
-  SECTION("nil format") {
-    check<const char*>("\xc0", 0);
+  SECTION("nil") {
+    const char* nil = 0;  // ArduinoJson uses a string for null
+    check("\xc0", nil);
   }
 
-  SECTION("bool format family") {
-    SECTION("false") {
-      check("\xc2", false);
-    }
-
-    SECTION("true") {
-      check("\xc3", true);
-    }
+  SECTION("bool") {
+    check("\xc2", false);
+    check("\xc3", true);
   }
 
-  SECTION("int format family") {
-    SECTION("7-bit positive integer") {
-      SECTION("0") {
-        check("\x00", 0);
-      }
+  SECTION("7-bit positive integer") {
+    check("\x00", 0);
+    check("\x7F", 127);
+  }
 
-      SECTION("127") {
-        check("\x7F", 127);
-      }
-    }
+  SECTION("5-bit negative integer") {
+    check("\xe0", -32);
+    check("\xff", -1);
+  }
 
-    SECTION("5-bit negative integer") {
-      SECTION("-32") {
-        check("\xe0", -32);
-      }
+  SECTION("8-bit unsigned integer") {
+    check("\xcc\x00", 0);
+    check("\xcc\xff", 255);
+  }
 
-      SECTION("-1") {
-        check("\xff", -1);
-      }
-    }
+  SECTION("16-bit unsigned integer") {
+    check("\xcd\x00\x00", 0);
+    check("\xcd\xFF\xFF", 65535);
+    check("\xcd\x30\x39", 12345);
+  }
 
-    SECTION("8-bit unsigned integer") {
-      SECTION("0") {
-        check("\xcc\x00", 0);
-      }
+  SECTION("32-bit unsigned integer") {
+    check("\xce\x00\x00\x00\x00", 0x00000000);
+    check("\xce\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
+    check("\xce\x12\x34\x56\x78", 0x12345678);
+  }
 
-      SECTION("255") {
-        check("\xcc\xff", 255);
-      }
-    }
-
-    SECTION("16-bit big-endian unsigned integer") {
-      SECTION("0") {
-        check("\xcd\x00\x00", 0);
-      }
-
-      SECTION("65535") {
-        check("\xcd\xFF\xFF", 65535);
-      }
-
-      SECTION("12345") {
-        check("\xcd\x30\x39", 12345);
-      }
-    }
-
-    SECTION("32-bit big-endian unsigned integer") {
-      SECTION("0x00000000") {
-        check("\xce\x00\x00\x00\x00", 0x00000000);
-      }
-
-      SECTION("0xFFFFFFFF") {
-        check("\xce\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
-      }
-
-      SECTION("0x12345678") {
-        check("\xce\x12\x34\x56\x78", 0x12345678);
-      }
-    }
-
-    SECTION("64-bit big-endian unsigned integer") {
-      SECTION("0x0000000000000000") {
-        char input[] = "\xcf\x00\x00\x00\x00\x00\x00\x00\x00";
+  SECTION("64-bit unsigned integer") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-        check<uint64_t>(input, 0);
+    check<uint64_t>("\xcf\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint64_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFFFFFFFFFF);
+    check<uint64_t>("\xcf\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
 #else
-        check<uint32_t>(input, 0);
+    check<uint32_t>("\xcf\x00\x00\x00\x00\x00\x00\x00\x00", 0);
+    check<uint32_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
+    check<uint32_t>("\xcf\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x9ABCDEF0);
 #endif
-      }
+  }
 
-      SECTION("0xFFFFFFFFFFFFFFFF") {
-        char input[] = "\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-        check<uint64_t>(input, 0xFFFFFFFFFFFFFFFF);
-#else
-        check<uint32_t>(input, 0xFFFFFFFF);
-#endif
-      }
+  SECTION("8-bit signed integer") {
+    check("\xd0\x00", 0);
+    check("\xd0\xff", -1);
+  }
 
-      SECTION("0x123456789ABCDEF0") {
-        char input[] = "\xcf\x12\x34\x56\x78\x9A\xBC\xDE\xF0";
-
-#if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-        check<uint64_t>(input, 0x123456789ABCDEF0);
-#else
-        check<uint32_t>(input, 0x9ABCDEF0);
-#endif
-      }
-    }
-
-    SECTION("8-bit signed integer") {
-      SECTION("0") {
-        check("\xd0\x00", 0);
-      }
-
-      SECTION("-1") {
-        check("\xd0\xff", -1);
-      }
-    }
-
-    SECTION("16-bit big-endian signed integer") {
-      SECTION("0") {
-        check("\xd1\x00\x00", 0);
-      }
-
-      SECTION("-1") {
-        check("\xd1\xFF\xFF", -1);
-      }
-
-      SECTION("-12345") {
-        check("\xd1\xcf\xc7", -12345);
-      }
-    }
+  SECTION("16-bit signed integer") {
+    check("\xd1\x00\x00", 0);
+    check("\xd1\xFF\xFF", -1);
+    check("\xd1\xcf\xc7", -12345);
   }
 }
