@@ -223,5 +223,27 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 #endif
       }
     }
+
+    SECTION("8-bit signed integer") {
+      SECTION("0") {
+        uint8_t input[] = {0xd0, 0x00};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == 0);
+      }
+
+      SECTION("-1") {
+        uint8_t input[] = {0xd0, 0xff};
+
+        bool success = deserializeMsgPack(variant, input);
+
+        REQUIRE(success == true);
+        REQUIRE(variant.is<int>());
+        REQUIRE(variant.as<int>() == -1);
+      }
+    }
   }
 }
