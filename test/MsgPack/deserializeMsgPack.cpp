@@ -15,7 +15,7 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 
     REQUIRE(success == true);
     REQUIRE(variant.is<char*>());
-    REQUIRE(variant.as<char*>() == NULL);
+    REQUIRE(variant.as<char*>() == static_cast<const char*>(0));
   }
 
   SECTION("bool format family") {
