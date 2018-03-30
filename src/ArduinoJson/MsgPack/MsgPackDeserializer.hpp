@@ -6,6 +6,8 @@
 
 namespace ArduinoJson {
 
+namespace Internals {
+
 template <typename T, uint8_t size>
 inline T readInteger(const uint8_t*& input) {
   T value = static_cast<T>(*input++);
@@ -16,8 +18,10 @@ inline T readInteger(const uint8_t*& input) {
   return value;
 }
 
-inline float readFloat(const uint8_t*& input) {
-  float value;
+template <typename T>
+inline typename EnableIf<sizeof(T) == 4, T>::type readFloat(
+    const uint8_t*& input) {
+  T value;
   uint8_t* p = reinterpret_cast<uint8_t*>(&value);
 #if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
   p[3] = *input++;
@@ -33,7 +37,23 @@ inline float readFloat(const uint8_t*& input) {
   return value;
 }
 
+template <typename T>
+inline typename EnableIf<sizeof(T) == 8, T>::type readDouble(
+    const uint8_t*& input) {
+  T value;
+  uint8_t* p = reinterpret_cast<uint8_t*>(&value);
+  for (uint8_t i = 0; i < 8; i++)
+#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
+    p[7 - i] = *input++;
+#else
+    p[i] = *input++;
+#endif
+  return value;
+}
+}  // namespace Internals
+
 inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
+  using namespace Internals;
   uint8_t c = *input++;
 
   if ((c & 0x80) == 0) {
@@ -100,7 +120,11 @@ inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
       return true;
 
     case 0xca:
-      variant = readFloat(input);
+      variant = readFloat<float>(input);
+      return true;
+
+    case 0xcb:
+      variant = readDouble<double>(input);
       return true;
 
     default:

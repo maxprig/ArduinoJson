@@ -3,7 +3,7 @@
 # MIT License
 
 add_executable(MsgPackTests
-	deserializeMsgPack
+	deserializeMsgPack.cpp
 )
 
 target_link_libraries(MsgPackTests catch)

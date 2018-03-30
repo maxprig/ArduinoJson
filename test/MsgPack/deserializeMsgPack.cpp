@@ -51,9 +51,9 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   }
 
   SECTION("32-bit unsigned integer") {
-    check("\xce\x00\x00\x00\x00", 0x00000000);
-    check("\xce\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
-    check("\xce\x12\x34\x56\x78", 0x12345678);
+    check("\xCE\x00\x00\x00\x00", 0x00000000);
+    check("\xCE\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
+    check("\xCE\x12\x34\x56\x78", 0x12345678);
   }
 
   SECTION("64-bit unsigned integer") {
@@ -98,7 +98,12 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   }
 
   SECTION("single precision floating point") {
-    check("\xca\x00\x00\x00\x00", 0.0f);
-    check("\xca\x40\x48\xF5\xC3", 3.14f);
+    check("\xCA\x00\x00\x00\x00", 0.0f);
+    check("\xCA\x40\x48\xF5\xC3", 3.14f);
+  }
+
+  SECTION("double precision floating point") {
+    check("\xCB\x00\x00\x00\x00\x00\x00\x00\x00", 0.0);
+    check("\xCB\x40\x09\x21\xCA\xC0\x83\x12\x6F", 3.1415);
   }
 }
