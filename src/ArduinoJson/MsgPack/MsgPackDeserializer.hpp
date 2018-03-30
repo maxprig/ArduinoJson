@@ -8,7 +8,7 @@ namespace ArduinoJson {
 
 template <typename T, uint8_t size>
 inline T readInteger(const uint8_t*& input) {
-  T value = *input++;
+  T value = static_cast<T>(*input++);
   for (uint8_t i = 1; i < size; i++) {
     value = static_cast<T>(value << 8);
     value = static_cast<T>(value | *input++);
