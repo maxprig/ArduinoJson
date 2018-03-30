@@ -6,7 +6,7 @@
 #include <catch.hpp>
 
 template <typename T>
-void check(const char* input, T expected) {
+static void check(const char* input, T expected) {
   DynamicJsonVariant variant;
 
   bool success = deserializeMsgPack(variant, input);

@@ -50,6 +50,30 @@ inline typename EnableIf<sizeof(T) == 8, T>::type readDouble(
 #endif
   return value;
 }
+
+template <typename T>
+inline typename EnableIf<sizeof(T) == 4, T>::type readDouble(
+    const uint8_t*& input) {
+  T value;
+  uint8_t* p = reinterpret_cast<uint8_t*>(&value);
+#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
+  uint8_t o[] = {3, 2, 1, 0};
+#else
+  uint8_t o[] = {0, 1, 2, 3};
+#endif
+  uint8_t a = *input++;
+  uint8_t b = *input++;
+  uint8_t c = *input++;
+  uint8_t d = *input++;
+  uint8_t e = *input++;
+  input += 3;  // skip
+  p[o[0]] = uint8_t((a & 0xC0) | (a << 3 & 0x3f) | (b >> 5));
+  p[o[1]] = uint8_t((b << 3) | (c >> 5));
+  p[o[2]] = uint8_t((c << 3) | (d >> 5));
+  p[o[3]] = uint8_t((d << 3) | (e >> 5));
+
+  return value;
+}
 }  // namespace Internals
 
 inline bool deserializeMsgPack(JsonVariant& variant, const uint8_t* input) {
