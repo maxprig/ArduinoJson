@@ -146,10 +146,11 @@
 #endif
 
 #ifndef ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
-#if defined(_MSC_VER) ||                                 \
-    (defined(__FLOAT_WORD_ORDER__) &&                    \
-     __FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#if defined(_MSC_VER) ||                                                      \
+    (defined(__FLOAT_WORD_ORDER__) &&                                         \
+     __FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__) ||                      \
+    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
+    (defined(__LITTLE_ENDIAN__))
 #define ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT 1
 #else
 #define ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT 0
