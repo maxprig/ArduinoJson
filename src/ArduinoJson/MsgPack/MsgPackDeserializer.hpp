@@ -7,8 +7,9 @@
 #include "../Deserialization/StringWriter.hpp"
 #include "../JsonVariant.hpp"
 #include "../Memory/JsonBuffer.hpp"
-#include "../Polyfills/endianess.hpp"
 #include "../TypeTraits/IsConst.hpp"
+#include "endianess.hpp"
+#include "ieee754.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -155,10 +156,7 @@ class MsgPackDeserializer {
     T value;       // output is 4 bytes
     uint8_t *o = reinterpret_cast<uint8_t *>(&value);
     read(i, 8);
-    o[0] = uint8_t((i[0] & 0xC0) | (i[0] << 3 & 0x3f) | (i[1] >> 5));
-    o[1] = uint8_t((i[1] << 3) | (i[2] >> 5));
-    o[2] = uint8_t((i[2] << 3) | (i[3] >> 5));
-    o[3] = uint8_t((i[3] << 3) | (i[4] >> 5));
+    doubleToFloat(i, o);
     fixEndianess(value);
     return value;
   }
