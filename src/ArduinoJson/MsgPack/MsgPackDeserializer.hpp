@@ -42,6 +42,11 @@ class MsgPackDeserializer {
       return true;
     }
 
+    if ((c & 0xa0) == 0xa0) {
+      variant = readString(c & 0x1f);
+      return true;
+    }
+
     switch (c) {
       case 0xc0:
         variant = static_cast<char *>(0);
@@ -159,6 +164,12 @@ class MsgPackDeserializer {
     doubleToFloat(i, o);
     fixEndianess(value);
     return value;
+  }
+
+  const char *readString(size_t n) {
+    typename RemoveReference<TWriter>::type::String str = _writer.startString();
+    for (; n; --n) str.append(readOne());
+    return str.c_str();
   }
 
   JsonBuffer *_buffer;
