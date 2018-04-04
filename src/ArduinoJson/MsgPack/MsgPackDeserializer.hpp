@@ -114,10 +114,13 @@ class MsgPackDeserializer {
     return static_cast<uint8_t>(c);
   }
 
+  void read(uint8_t *p, size_t n) {
+    for (size_t i = 0; i < n; i++) p[i] = readOne();
+  }
+
   template <typename T>
   void read(T &value) {
-    uint8_t *p = reinterpret_cast<uint8_t *>(&value);
-    for (size_t i = 0; i < sizeof(T); i++) p[i] = readOne();
+    read(reinterpret_cast<uint8_t *>(&value), sizeof(value));
   }
 
   template <typename T, uint8_t size>
@@ -148,20 +151,14 @@ class MsgPackDeserializer {
 
   template <typename T>
   typename EnableIf<sizeof(T) == 4, T>::type readDouble() {
-    T value;
-    uint8_t *p = reinterpret_cast<uint8_t *>(&value);
-    uint8_t a = readOne();
-    uint8_t b = readOne();
-    uint8_t c = readOne();
-    uint8_t d = readOne();
-    uint8_t e = readOne();
-    _reader.move();
-    _reader.move();
-    _reader.move();
-    p[0] = uint8_t((a & 0xC0) | (a << 3 & 0x3f) | (b >> 5));
-    p[1] = uint8_t((b << 3) | (c >> 5));
-    p[2] = uint8_t((c << 3) | (d >> 5));
-    p[3] = uint8_t((d << 3) | (e >> 5));
+    uint8_t i[8];  // input is 8 bytes
+    T value;       // output is 4 bytes
+    uint8_t *o = reinterpret_cast<uint8_t *>(&value);
+    read(i, 8);
+    o[0] = uint8_t((i[0] & 0xC0) | (i[0] << 3 & 0x3f) | (i[1] >> 5));
+    o[1] = uint8_t((i[1] << 3) | (i[2] >> 5));
+    o[2] = uint8_t((i[2] << 3) | (i[3] >> 5));
+    o[3] = uint8_t((i[3] << 3) | (i[4] >> 5));
     fixEndianess(value);
     return value;
   }
