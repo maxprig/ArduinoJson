@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "../Deserialization/StringWriter.hpp"
 #include "../JsonVariant.hpp"
 #include "../Memory/JsonBuffer.hpp"
+#include "../Strings/StringWriter.hpp"
 #include "../TypeTraits/IsConst.hpp"
 #include "endianess.hpp"
 #include "ieee754.hpp"

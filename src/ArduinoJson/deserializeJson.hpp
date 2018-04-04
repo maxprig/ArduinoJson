@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Deserialization/JsonParser.hpp"
+#include "Json/Deserialization/JsonParser.hpp"
 
 namespace ArduinoJson {
 // JsonError deserializeJson(TDestination& destination, TString json);

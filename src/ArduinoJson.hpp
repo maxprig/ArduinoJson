@@ -14,8 +14,8 @@
 #include "ArduinoJson/deserializeJson.hpp"
 #include "ArduinoJson/deserializeMsgPack.hpp"
 
-#include "ArduinoJson/Deserialization/JsonParserImpl.hpp"
+#include "ArduinoJson/Json/Deserialization/JsonParserImpl.hpp"
+#include "ArduinoJson/Json/Serialization/JsonSerializerImpl.hpp"
 #include "ArduinoJson/JsonArrayImpl.hpp"
 #include "ArduinoJson/JsonObjectImpl.hpp"
 #include "ArduinoJson/JsonVariantImpl.hpp"
-#include "ArduinoJson/Serialization/JsonSerializerImpl.hpp"
