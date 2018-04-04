@@ -61,42 +61,44 @@ class MsgPackDeserializer {
         return true;
 
       case 0xcc:
-        variant = readInteger<uint8_t, 1>();
+        variant = readInteger<uint8_t>();
         return true;
 
       case 0xcd:
-        variant = readInteger<uint16_t, 2>();
+        variant = readInteger<uint16_t>();
         return true;
 
       case 0xce:
-        variant = readInteger<uint32_t, 4>();
+        variant = readInteger<uint32_t>();
         return true;
 
       case 0xcf:
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-        variant = readInteger<uint64_t, 8>();
+        variant = readInteger<uint64_t>();
 #else
-        variant = readInteger<uint32_t, 8>();
+        readInteger<uint32_t>();
+        variant = readInteger<uint32_t>();
 #endif
         return true;
 
       case 0xd0:
-        variant = readInteger<int8_t, 1>();
+        variant = readInteger<int8_t>();
         return true;
 
       case 0xd1:
-        variant = readInteger<int16_t, 2>();
+        variant = readInteger<int16_t>();
         return true;
 
       case 0xd2:
-        variant = readInteger<int32_t, 4>();
+        variant = readInteger<int32_t>();
         return true;
 
       case 0xd3:
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-        variant = readInteger<int64_t, 8>();
+        variant = readInteger<int64_t>();
 #else
-        variant = readInteger<int32_t, 8>();
+        readInteger<int32_t>();
+        variant = readInteger<int32_t>();
 #endif
         return true;
 
@@ -109,15 +111,19 @@ class MsgPackDeserializer {
         return true;
 
       case 0xd9: {
-        uint8_t n = readOne();
+        uint8_t n = readInteger<uint8_t>();
         variant = readString(n);
         return true;
       }
 
       case 0xda: {
-        uint16_t n;
-        read(n);
-        fixEndianess(n);
+        uint16_t n = readInteger<uint16_t>();
+        variant = readString(n);
+        return true;
+      }
+
+      case 0xdb: {
+        uint32_t n = readInteger<uint32_t>();
         variant = readString(n);
         return true;
       }
@@ -143,13 +149,11 @@ class MsgPackDeserializer {
     read(reinterpret_cast<uint8_t *>(&value), sizeof(value));
   }
 
-  template <typename T, uint8_t size>
+  template <typename T>
   T readInteger() {
-    T value = static_cast<T>(readOne());
-    for (uint8_t i = 1; i < size; i++) {
-      value = static_cast<T>(value << 8);
-      value = static_cast<T>(value | readOne());
-    }
+    T value;
+    read(value);
+    fixEndianess(value);
     return value;
   }
 

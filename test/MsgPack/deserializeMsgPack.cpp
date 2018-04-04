@@ -125,4 +125,8 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   SECTION("str 16") {
     check<const char*>("\xda\x00\x05hello", std::string("hello"));
   }
+
+  SECTION("str 32") {
+    check<const char*>("\xdb\x00\x00\x00\x05hello", std::string("hello"));
+  }
 }
