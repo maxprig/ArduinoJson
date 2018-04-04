@@ -113,11 +113,12 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 
   SECTION("fixstr") {
     check<const char*>("\xA0", std::string(""));
-    check<const char*>("\xAB\x68\x65\x6C\x6C\x6F\x20\x77\x6F\x72\x6C\x64",
-                       std::string("hello world"));
-    check<const char*>(
-        "\xBF\x68\x65\x6C\x6C\x6F\x20\x77\x6F\x72\x6C\x64\x20\x68\x65\x6C\x6C"
-        "\x6F\x20\x77\x6F\x72\x6C\x64\x20\x68\x65\x6C\x6C\x6F\x20\x21",
-        std::string("hello world hello world hello !"));
+    check<const char*>("\xABhello world", std::string("hello world"));
+    check<const char*>("\xBFhello world hello world hello !",
+                       std::string("hello world hello world hello !"));
+  }
+
+  SECTION("str 8") {
+    check<const char*>("\xd9\x05hello", std::string("hello"));
   }
 }

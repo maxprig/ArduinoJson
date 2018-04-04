@@ -108,6 +108,12 @@ class MsgPackDeserializer {
         variant = readDouble<double>();
         return true;
 
+      case 0xd9: {
+        uint8_t n = readOne();
+        variant = readString(n);
+        return true;
+      }
+
       default:
         return false;
     }
