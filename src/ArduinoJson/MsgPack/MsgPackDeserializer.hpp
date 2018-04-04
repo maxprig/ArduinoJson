@@ -114,6 +114,14 @@ class MsgPackDeserializer {
         return true;
       }
 
+      case 0xda: {
+        uint16_t n;
+        read(n);
+        fixEndianess(n);
+        variant = readString(n);
+        return true;
+      }
+
       default:
         return false;
     }

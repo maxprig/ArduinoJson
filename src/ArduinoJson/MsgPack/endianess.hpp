@@ -29,6 +29,10 @@ inline void fixEndianess(uint8_t* p, integral_constant<size_t, 4>) {
   swap(p[1], p[2]);
 }
 
+inline void fixEndianess(uint8_t* p, integral_constant<size_t, 2>) {
+  swap(p[0], p[1]);
+}
+
 template <typename T>
 inline void fixEndianess(T& value) {
 #if ARDUINOJSON_LITTLE_ENDIAN
