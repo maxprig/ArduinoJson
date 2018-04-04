@@ -145,14 +145,12 @@
 #error ARDUINOJSON_USE_LONG_LONG and ARDUINOJSON_USE_INT64 cannot be set together
 #endif
 
-#ifndef ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
+#ifndef ARDUINOJSON_LITTLE_ENDIAN
 #if defined(_MSC_VER) ||                                                      \
-    (defined(__FLOAT_WORD_ORDER__) &&                                         \
-     __FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__) ||                      \
     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
     (defined(__LITTLE_ENDIAN__))
-#define ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT 1
+#define ARDUINOJSON_LITTLE_ENDIAN 1
 #else
-#define ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT 0
+#define ARDUINOJSON_LITTLE_ENDIAN 0
 #endif
 #endif

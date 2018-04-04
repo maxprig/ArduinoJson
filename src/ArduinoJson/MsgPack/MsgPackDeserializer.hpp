@@ -7,6 +7,7 @@
 #include "../Deserialization/StringWriter.hpp"
 #include "../JsonVariant.hpp"
 #include "../Memory/JsonBuffer.hpp"
+#include "../Polyfills/endianess.hpp"
 #include "../TypeTraits/IsConst.hpp"
 
 namespace ArduinoJson {
@@ -110,7 +111,13 @@ class MsgPackDeserializer {
   uint8_t readOne() {
     char c = _reader.current();
     _reader.move();
-    return c;
+    return static_cast<uint8_t>(c);
+  }
+
+  template <typename T>
+  void read(T &value) {
+    uint8_t *p = reinterpret_cast<uint8_t *>(&value);
+    for (size_t i = 0; i < sizeof(T); i++) p[i] = readOne();
   }
 
   template <typename T, uint8_t size>
@@ -126,30 +133,16 @@ class MsgPackDeserializer {
   template <typename T>
   typename EnableIf<sizeof(T) == 4, T>::type readFloat() {
     T value;
-    uint8_t *p = reinterpret_cast<uint8_t *>(&value);
-#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
-    p[3] = readOne();
-    p[2] = readOne();
-    p[1] = readOne();
-    p[0] = readOne();
-#else
-    p[0] = readOne();
-    p[1] = readOne();
-    p[2] = readOne();
-    p[3] = readOne();
-#endif
+    read(value);
+    fixEndianess(value);
     return value;
   }
+
   template <typename T>
   typename EnableIf<sizeof(T) == 8, T>::type readDouble() {
     T value;
-    uint8_t *p = reinterpret_cast<uint8_t *>(&value);
-    for (uint8_t i = 0; i < 8; i++)
-#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
-      p[7 - i] = readOne();
-#else
-      p[i] = readOne();
-#endif
+    read(value);
+    fixEndianess(value);
     return value;
   }
 
@@ -157,11 +150,6 @@ class MsgPackDeserializer {
   typename EnableIf<sizeof(T) == 4, T>::type readDouble() {
     T value;
     uint8_t *p = reinterpret_cast<uint8_t *>(&value);
-#if ARDUINOJSON_USE_LITTLE_ENDIAN_FLOAT
-    uint8_t o[] = {3, 2, 1, 0};
-#else
-    uint8_t o[] = {0, 1, 2, 3};
-#endif
     uint8_t a = readOne();
     uint8_t b = readOne();
     uint8_t c = readOne();
@@ -170,11 +158,11 @@ class MsgPackDeserializer {
     _reader.move();
     _reader.move();
     _reader.move();
-    p[o[0]] = uint8_t((a & 0xC0) | (a << 3 & 0x3f) | (b >> 5));
-    p[o[1]] = uint8_t((b << 3) | (c >> 5));
-    p[o[2]] = uint8_t((c << 3) | (d >> 5));
-    p[o[3]] = uint8_t((d << 3) | (e >> 5));
-
+    p[0] = uint8_t((a & 0xC0) | (a << 3 & 0x3f) | (b >> 5));
+    p[1] = uint8_t((b << 3) | (c >> 5));
+    p[2] = uint8_t((c << 3) | (d >> 5));
+    p[3] = uint8_t((d << 3) | (e >> 5));
+    fixEndianess(value);
     return value;
   }
 
