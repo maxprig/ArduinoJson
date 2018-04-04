@@ -58,9 +58,11 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 
   SECTION("64-bit unsigned integer") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
-    check<uint64_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0);
-    check<uint64_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFFFFFFFFFF);
-    check<uint64_t>("\xCF\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
+    check<uint64_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
+    check<uint64_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
+                    0xFFFFFFFFFFFFFFFFU);
+    check<uint64_t>("\xCF\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+                    0x123456789ABCDEF0U);
 #else
     check<uint32_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
     check<uint32_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
@@ -88,8 +90,10 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
   SECTION("64-bit signed integer") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
     check<uint64_t>("\xD3\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
-    check<uint64_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFFFFFFFFFF);
-    check<uint64_t>("\xD3\x12\x34\x56\x78\x9A\xBC\xDE\xF0", 0x123456789ABCDEF0);
+    check<uint64_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
+                    0xFFFFFFFFFFFFFFFFU);
+    check<uint64_t>("\xD3\x12\x34\x56\x78\x9A\xBC\xDE\xF0",
+                    0x123456789ABCDEF0U);
 #else
     check<uint32_t>("\xD3\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
     check<uint32_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 0xFFFFFFFF);
