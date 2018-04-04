@@ -168,7 +168,7 @@ class MsgPackDeserializer {
 
   const char *readString(size_t n) {
     typename RemoveReference<TWriter>::type::String str = _writer.startString();
-    for (; n; --n) str.append(readOne());
+    for (; n; --n) str.append(static_cast<char>(readOne()));
     return str.c_str();
   }
 
