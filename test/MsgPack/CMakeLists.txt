@@ -4,7 +4,7 @@
 
 add_executable(MsgPackTests
 	deserializeMsgPack.cpp
-	# readDouble.cpp
+	readDouble.cpp
 )
 
 target_link_libraries(MsgPackTests catch)
