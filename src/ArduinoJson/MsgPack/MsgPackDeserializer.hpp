@@ -26,10 +26,22 @@ class MsgPackDeserializer {
         _reader(reader),
         _writer(writer),
         _nestingLimit(nestingLimit) {}
-  bool parse(JsonArray &destination);
+
+  bool parse(JsonArray &array) {
+    uint8_t c = readOne();
+    size_t n = c & 0x0F;
+
+    for (; n; --n) {
+      JsonVariant variant;
+      parse(variant);
+      array.add(variant);
+    }
+
+    return true;
+  }
+
   bool parse(JsonObject &destination);
   bool parse(JsonVariant &variant) {
-    using namespace Internals;
     uint8_t c = readOne();
 
     if ((c & 0x80) == 0) {

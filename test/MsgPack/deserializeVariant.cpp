@@ -17,8 +17,6 @@ static void check(const char* input, U expected) {
 }
 
 TEST_CASE("deserializeMsgPack(JsonVariant&)") {
-  DynamicJsonVariant variant;
-
   SECTION("nil") {
     const char* nil = 0;  // ArduinoJson uses a string for null
     check<const char*>("\xc0", nil);
