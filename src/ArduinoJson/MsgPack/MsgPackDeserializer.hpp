@@ -29,7 +29,15 @@ class MsgPackDeserializer {
 
   bool parse(JsonArray &array) {
     uint8_t c = readOne();
-    size_t n = c & 0x0F;
+    size_t n;
+
+    if ((c & 0xF0) == 0x90) {
+      n = c & 0x0F;
+    } else if (c == 0xdc) {
+      n = readInteger<uint16_t>();
+    } else {
+      return false;
+    }
 
     for (; n; --n) {
       JsonVariant variant;
@@ -54,7 +62,7 @@ class MsgPackDeserializer {
       return true;
     }
 
-    if ((c & 0xa0) == 0xa0) {
+    if ((c & 0xe0) == 0xa0) {
       variant = readString(c & 0x1f);
       return true;
     }

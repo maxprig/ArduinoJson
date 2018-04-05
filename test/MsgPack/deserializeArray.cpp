@@ -29,4 +29,26 @@ TEST_CASE("deserializeMsgPack(JsonArray&)") {
       REQUIRE(array[1] == 2);
     }
   }
+
+  SECTION("array 16") {
+    SECTION("empty") {
+      const char* input = "\xDC\x00";
+
+      bool success = deserializeMsgPack(array, input);
+
+      REQUIRE(success == true);
+      REQUIRE(array.size() == 0);
+    }
+
+    SECTION("two strings") {
+      const char* input = "\xDC\x00\x02\xA5hello\xA5world";
+
+      bool success = deserializeMsgPack(array, input);
+
+      REQUIRE(success == true);
+      REQUIRE(array.size() == 2);
+      REQUIRE(array[0] == "hello");
+      REQUIRE(array[1] == "world");
+    }
+  }
 }
