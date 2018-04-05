@@ -41,11 +41,7 @@ class MsgPackDeserializer {
       return false;
     }
 
-    for (; n; --n) {
-      JsonVariant variant;
-      parse(variant);
-      array.add(variant);
-    }
+    readArray(array, n);
 
     return true;
   }
@@ -66,6 +62,11 @@ class MsgPackDeserializer {
 
     if ((c & 0xe0) == 0xa0) {
       variant = readString(c & 0x1f);
+      return true;
+    }
+
+    if ((c & 0xF0) == 0x90) {
+      readArray(variant, c & 0x0F);
       return true;
     }
 
@@ -150,6 +151,14 @@ class MsgPackDeserializer {
         return true;
       }
 
+      case 0xdc:
+        readArray(variant, readInteger<uint16_t>());
+        return true;
+
+      case 0xdd:
+        readArray(variant, readInteger<uint32_t>());
+        return true;
+
       default:
         return false;
     }
@@ -213,6 +222,20 @@ class MsgPackDeserializer {
     typename RemoveReference<TWriter>::type::String str = _writer.startString();
     for (; n; --n) str.append(static_cast<char>(readOne()));
     return str.c_str();
+  }
+
+  void readArray(JsonVariant &variant, size_t n) {
+    JsonArray *array = new (_buffer) JsonArray(_buffer);
+    variant = array;
+    return readArray(*array, n);
+  }
+
+  void readArray(JsonArray &array, size_t n) {
+    for (; n; --n) {
+      JsonVariant variant;
+      parse(variant);
+      array.add(variant);
+    }
   }
 
   JsonBuffer *_buffer;
