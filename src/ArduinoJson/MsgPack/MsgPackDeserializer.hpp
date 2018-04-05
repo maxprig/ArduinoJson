@@ -134,6 +134,9 @@ class MsgPackDeserializer {
   }
 
  private:
+  // Prevent VS warning "assignment operator could not be generated"
+  MsgPackDeserializer &operator=(const MsgPackDeserializer &);
+
   uint8_t readOne() {
     char c = _reader.current();
     _reader.move();
