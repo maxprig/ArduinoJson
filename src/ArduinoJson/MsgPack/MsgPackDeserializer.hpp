@@ -35,6 +35,8 @@ class MsgPackDeserializer {
       n = c & 0x0F;
     } else if (c == 0xdc) {
       n = readInteger<uint16_t>();
+    } else if (c == 0xdd) {
+      n = readInteger<uint32_t>();
     } else {
       return false;
     }

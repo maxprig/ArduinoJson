@@ -32,7 +32,7 @@ TEST_CASE("deserializeMsgPack(JsonArray&)") {
 
   SECTION("array 16") {
     SECTION("empty") {
-      const char* input = "\xDC\x00";
+      const char* input = "\xDC\x00\x00";
 
       bool success = deserializeMsgPack(array, input);
 
@@ -49,6 +49,29 @@ TEST_CASE("deserializeMsgPack(JsonArray&)") {
       REQUIRE(array.size() == 2);
       REQUIRE(array[0] == "hello");
       REQUIRE(array[1] == "world");
+    }
+  }
+
+  SECTION("array 32") {
+    SECTION("empty") {
+      const char* input = "\xDD\x00\x00\x00\x00";
+
+      bool success = deserializeMsgPack(array, input);
+
+      REQUIRE(success == true);
+      REQUIRE(array.size() == 0);
+    }
+
+    SECTION("two floats") {
+      const char* input =
+          "\xDD\x00\x00\x00\x02\xCA\x00\x00\x00\x00\xCA\x40\x48\xF5\xC3";
+
+      bool success = deserializeMsgPack(array, input);
+
+      REQUIRE(success == true);
+      REQUIRE(array.size() == 2);
+      REQUIRE(array[0] == 0.0f);
+      REQUIRE(array[1] == 3.14f);
     }
   }
 }
