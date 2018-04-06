@@ -46,7 +46,25 @@ class MsgPackDeserializer {
     return true;
   }
 
-  bool parse(JsonObject &destination);
+  bool parse(JsonObject &object) {
+    uint8_t c = readOne();
+    size_t n;
+
+    if ((c & 0xf0) == 0x80) {
+      n = c & 0x0f;
+    } else if (c == 0xde) {
+      n = readInteger<uint16_t>();
+    } else if (c == 0xdf) {
+      n = readInteger<uint32_t>();
+    } else {
+      return false;
+    }
+
+    readObject(object, n);
+
+    return true;
+  }
+
   bool parse(JsonVariant &variant) {
     uint8_t c = readOne();
 
@@ -232,9 +250,19 @@ class MsgPackDeserializer {
 
   void readArray(JsonArray &array, size_t n) {
     for (; n; --n) {
-      JsonVariant variant;
-      parse(variant);
-      array.add(variant);
+      JsonVariant element;
+      parse(element);
+      array.add(element);
+    }
+  }
+
+  void readObject(JsonObject &object, size_t n) {
+    for (; n; --n) {
+      JsonVariant key;
+      parse(key);
+      JsonVariant value;
+      parse(value);
+      object.set(key.as<char *>(), value);
     }
   }
 
