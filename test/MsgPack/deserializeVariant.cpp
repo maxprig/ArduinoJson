@@ -200,4 +200,78 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
       REQUIRE(variant[1] == 3.14f);
     }
   }
+
+  SECTION("fixmap") {
+    DynamicJsonVariant variant;
+
+    SECTION("empty") {
+      const char* input = "\x80";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 0);
+    }
+
+    SECTION("two integers") {
+      const char* input = "\x82\xA3one\x01\xA3two\x02";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 2);
+      REQUIRE(variant["one"] == 1);
+      REQUIRE(variant["two"] == 2);
+    }
+  }
+
+  SECTION("map 16") {
+    DynamicJsonVariant variant;
+
+    SECTION("empty") {
+      const char* input = "\xDE\x00\x00";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 0);
+    }
+
+    SECTION("two strings") {
+      const char* input = "\xDE\x00\x02\xA1H\xA5hello\xA1W\xA5world";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 2);
+      REQUIRE(variant["H"] == "hello");
+      REQUIRE(variant["W"] == "world");
+    }
+  }
+
+  SECTION("map 32") {
+    DynamicJsonVariant variant;
+
+    SECTION("empty") {
+      const char* input = "\xDF\x00\x00\x00\x00";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 0);
+    }
+
+    SECTION("two floats") {
+      const char* input =
+          "\xDF\x00\x00\x00\x02\xA4zero\xCA\x00\x00\x00\x00\xA2pi\xCA\x40\x48"
+          "\xF5\xC3";
+
+      bool success = deserializeMsgPack(variant, input);
+
+      REQUIRE(success == true);
+      REQUIRE(variant.size() == 2);
+      REQUIRE(variant["zero"] == 0.0f);
+      REQUIRE(variant["pi"] == 3.14f);
+    }
+  }
 }

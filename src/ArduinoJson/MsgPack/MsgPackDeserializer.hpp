@@ -83,8 +83,13 @@ class MsgPackDeserializer {
       return true;
     }
 
-    if ((c & 0xF0) == 0x90) {
+    if ((c & 0xf0) == 0x90) {
       readArray(variant, c & 0x0F);
+      return true;
+    }
+
+    if ((c & 0xf0) == 0x80) {
+      readObject(variant, c & 0x0F);
       return true;
     }
 
@@ -177,6 +182,14 @@ class MsgPackDeserializer {
         readArray(variant, readInteger<uint32_t>());
         return true;
 
+      case 0xde:
+        readObject(variant, readInteger<uint16_t>());
+        return true;
+
+      case 0xdf:
+        readObject(variant, readInteger<uint32_t>());
+        return true;
+
       default:
         return false;
     }
@@ -254,6 +267,12 @@ class MsgPackDeserializer {
       parse(element);
       array.add(element);
     }
+  }
+
+  void readObject(JsonVariant &variant, size_t n) {
+    JsonObject *object = new (_buffer) JsonObject(_buffer);
+    variant = object;
+    return readObject(*object, n);
   }
 
   void readObject(JsonObject &object, size_t n) {

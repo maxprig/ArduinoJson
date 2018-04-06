@@ -30,7 +30,7 @@ TEST_CASE("deserializeMsgPack(JsonObject&)") {
     }
   }
 
-  SECTION("object 16") {
+  SECTION("map 16") {
     SECTION("empty") {
       const char* input = "\xDE\x00\x00";
 
@@ -52,7 +52,7 @@ TEST_CASE("deserializeMsgPack(JsonObject&)") {
     }
   }
 
-  SECTION("object 32") {
+  SECTION("map 32") {
     SECTION("empty") {
       const char* input = "\xDF\x00\x00\x00\x00";
 
