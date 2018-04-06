@@ -8,8 +8,9 @@
 #include "../Memory/JsonBuffer.hpp"
 #include "../Strings/StringWriter.hpp"
 #include "../TypeTraits/IsConst.hpp"
-#include "endianess.hpp"
-#include "ieee754.hpp"
+#include "./MsgPackError.hpp"
+#include "./endianess.hpp"
+#include "./ieee754.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -27,7 +28,7 @@ class MsgPackDeserializer {
         _writer(writer),
         _nestingLimit(nestingLimit) {}
 
-  bool parse(JsonArray &array) {
+  MsgPackError parse(JsonArray &array) {
     uint8_t c = readOne();
     size_t n;
 
@@ -46,7 +47,7 @@ class MsgPackDeserializer {
     return true;
   }
 
-  bool parse(JsonObject &object) {
+  MsgPackError parse(JsonObject &object) {
     uint8_t c = readOne();
     size_t n;
 
@@ -65,7 +66,7 @@ class MsgPackDeserializer {
     return true;
   }
 
-  bool parse(JsonVariant &variant) {
+  MsgPackError parse(JsonVariant &variant) {
     uint8_t c = readOne();
 
     if ((c & 0x80) == 0) {

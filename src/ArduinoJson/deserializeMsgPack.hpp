@@ -7,11 +7,12 @@
 #include "MsgPack/MsgPackDeserializer.hpp"
 
 namespace ArduinoJson {
-// bool deserializeMsgPack(TDestination& destination, TString json);
+// MsgPackError deserializeMsgPack(TDestination& destination, TString json);
 // TDestination = JsonArray, JsonObject, JsonVariant
 // TString = const std::string&, const String&
 template <typename TDestination, typename TString>
-typename Internals::EnableIf<!Internals::IsArray<TString>::value, bool>::type
+typename Internals::EnableIf<!Internals::IsArray<TString>::value,
+                             MsgPackError>::type
 deserializeMsgPack(TDestination &destination, const TString &json,
                    uint8_t nestingLimit = ARDUINOJSON_DEFAULT_NESTING_LIMIT) {
   destination.clear();
@@ -20,11 +21,11 @@ deserializeMsgPack(TDestination &destination, const TString &json,
       .parse(destination);
 }
 //
-// bool deserializeMsgPack(TDestination& destination, TString json);
+// MsgPackError deserializeMsgPack(TDestination& destination, TString json);
 // TDestination = JsonArray, JsonObject, JsonVariant
 // TString = const char*, const char[N], const FlashStringHelper*
 template <typename TDestination, typename TString>
-bool deserializeMsgPack(
+MsgPackError deserializeMsgPack(
     TDestination &destination, TString *json,
     uint8_t nestingLimit = ARDUINOJSON_DEFAULT_NESTING_LIMIT) {
   destination.clear();
@@ -33,11 +34,11 @@ bool deserializeMsgPack(
       .parse(destination);
 }
 //
-// bool deserializeMsgPack(TDestination& destination, TString json);
+// MsgPackError deserializeMsgPack(TDestination& destination, TString json);
 // TDestination = JsonArray, JsonObject, JsonVariant
 // TString = std::istream&, Stream&
 template <typename TDestination, typename TString>
-bool deserializeMsgPack(
+MsgPackError deserializeMsgPack(
     TDestination &destination, TString &json,
     uint8_t nestingLimit = ARDUINOJSON_DEFAULT_NESTING_LIMIT) {
   destination.clear();
