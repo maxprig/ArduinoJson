@@ -7,6 +7,7 @@ add_executable(MsgPackTests
 	deserializeArray.cpp
 	deserializeObject.cpp
 	deserializeVariant.cpp
+	deserializeStaticVariant.cpp
 	doubleToFloat.cpp
 )
 

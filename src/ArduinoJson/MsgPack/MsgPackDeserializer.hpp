@@ -80,8 +80,7 @@ class MsgPackDeserializer {
     }
 
     if ((c & 0xe0) == 0xa0) {
-      variant = readString(c & 0x1f);
-      return MsgPackError::Ok;
+      return readString(variant, c & 0x1f);
     }
 
     if ((c & 0xf0) == 0x90) {
@@ -159,20 +158,17 @@ class MsgPackDeserializer {
 
       case 0xd9: {
         uint8_t n = readInteger<uint8_t>();
-        variant = readString(n);
-        return MsgPackError::Ok;
+        return readString(variant, n);
       }
 
       case 0xda: {
         uint16_t n = readInteger<uint16_t>();
-        variant = readString(n);
-        return MsgPackError::Ok;
+        return readString(variant, n);
       }
 
       case 0xdb: {
         uint32_t n = readInteger<uint32_t>();
-        variant = readString(n);
-        return MsgPackError::Ok;
+        return readString(variant, n);
       }
 
       case 0xdc:
@@ -250,10 +246,13 @@ class MsgPackDeserializer {
     return value;
   }
 
-  const char *readString(size_t n) {
+  MsgPackError readString(JsonVariant &variant, size_t n) {
     typename RemoveReference<TWriter>::type::String str = _writer.startString();
     for (; n; --n) str.append(static_cast<char>(readOne()));
-    return str.c_str();
+    const char *s = str.c_str();
+    if (s == NULL) return MsgPackError::NoMemory;
+    variant = s;
+    return MsgPackError::Ok;
   }
 
   void readArray(JsonVariant &variant, size_t n) {

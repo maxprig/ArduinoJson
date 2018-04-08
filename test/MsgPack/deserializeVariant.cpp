@@ -9,9 +9,9 @@ template <typename T, typename U>
 static void check(const char* input, U expected) {
   DynamicJsonVariant variant;
 
-  bool success = deserializeMsgPack(variant, input);
+  MsgPackError error = deserializeMsgPack(variant, input);
 
-  REQUIRE(success == true);
+  REQUIRE(error == MsgPackError::Ok);
   REQUIRE(variant.is<T>());
   REQUIRE(variant.as<T>() == expected);
 }
@@ -27,34 +27,34 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
     check<bool>("\xc3", true);
   }
 
-  SECTION("7-bit positive integer") {
+  SECTION("positive fixint") {
     check<int>("\x00", 0);
     check<int>("\x7F", 127);
   }
 
-  SECTION("5-bit negative integer") {
+  SECTION("negative fixint") {
     check<int>("\xe0", -32);
     check<int>("\xff", -1);
   }
 
-  SECTION("8-bit unsigned integer") {
+  SECTION("uint 8") {
     check<int>("\xcc\x00", 0);
     check<int>("\xcc\xff", 255);
   }
 
-  SECTION("16-bit unsigned integer") {
+  SECTION("uint 16") {
     check<int>("\xcd\x00\x00", 0);
     check<int>("\xcd\xFF\xFF", 65535);
     check<int>("\xcd\x30\x39", 12345);
   }
 
-  SECTION("32-bit unsigned integer") {
+  SECTION("uint 32") {
     check<uint32_t>("\xCE\x00\x00\x00\x00", 0x00000000U);
     check<uint32_t>("\xCE\xFF\xFF\xFF\xFF", 0xFFFFFFFFU);
     check<uint32_t>("\xCE\x12\x34\x56\x78", 0x12345678U);
   }
 
-  SECTION("64-bit unsigned integer") {
+  SECTION("uint 64") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
     check<uint64_t>("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
     check<uint64_t>("\xCF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
@@ -68,24 +68,24 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 #endif
   }
 
-  SECTION("8-bit signed integer") {
+  SECTION("int 8") {
     check<int>("\xd0\x00", 0);
     check<int>("\xd0\xff", -1);
   }
 
-  SECTION("16-bit signed integer") {
+  SECTION("int 16") {
     check<int>("\xD1\x00\x00", 0);
     check<int>("\xD1\xFF\xFF", -1);
     check<int>("\xD1\xCF\xC7", -12345);
   }
 
-  SECTION("32-bit signed integer") {
+  SECTION("int 32") {
     check<int>("\xD2\x00\x00\x00\x00", 0);
     check<int>("\xD2\xFF\xFF\xFF\xFF", -1);
     check<int>("\xD2\xB6\x69\xFD\x2E", -1234567890);
   }
 
-  SECTION("64-bit signed integer") {
+  SECTION("int 64") {
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
     check<uint64_t>("\xD3\x00\x00\x00\x00\x00\x00\x00\x00", 0U);
     check<uint64_t>("\xD3\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
@@ -99,12 +99,12 @@ TEST_CASE("deserializeMsgPack(JsonVariant&)") {
 #endif
   }
 
-  SECTION("single precision floating point") {
+  SECTION("float 32") {
     check<double>("\xCA\x00\x00\x00\x00", 0.0f);
     check<double>("\xCA\x40\x48\xF5\xC3", 3.14f);
   }
 
-  SECTION("double precision floating point") {
+  SECTION("float 64") {
     check<double>("\xCB\x00\x00\x00\x00\x00\x00\x00\x00", 0.0);
     check<double>("\xCB\x40\x09\x21\xCA\xC0\x83\x12\x6F", 3.1415);
   }
