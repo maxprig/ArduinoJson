@@ -10,7 +10,7 @@ class MsgPackError {
  public:
   enum Code { Ok, Error, NotSupported, NoMemory };
 
-  MsgPackError() : _code(Ok) {}
+  MsgPackError() {}
 
   MsgPackError(Code code) : _code(code) {}
 

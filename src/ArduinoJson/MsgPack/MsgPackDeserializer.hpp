@@ -168,12 +168,10 @@ class MsgPackDeserializer {
         return readArray(variant, readInteger<uint32_t>());
 
       case 0xde:
-        readObject(variant, readInteger<uint16_t>());
-        return MsgPackError::Ok;
+        return readObject(variant, readInteger<uint16_t>());
 
       case 0xdf:
-        readObject(variant, readInteger<uint32_t>());
-        return MsgPackError::Ok;
+        return readObject(variant, readInteger<uint32_t>());
 
       default:
         return MsgPackError::NotSupported;

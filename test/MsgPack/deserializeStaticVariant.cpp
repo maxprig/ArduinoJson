@@ -75,18 +75,37 @@ TEST_CASE("deserializeMsgPack(StaticJsonVariant&)") {
                               MsgPackError::NoMemory);
   }
 
-  SECTION("fixmap") {
+  SECTION("map 16") {
     SECTION("{}") {
-      check<JSON_OBJECT_SIZE(0)>("\x80", MsgPackError::Ok);
+      check<JSON_OBJECT_SIZE(0)>("\xDE\x00\x00", MsgPackError::Ok);
     }
     SECTION("{H:1}") {
-      check<JSON_OBJECT_SIZE(0)>("\x81\xA1H\x01", MsgPackError::NoMemory);
-      check<JSON_OBJECT_SIZE(1) + 4>("\x81\xA1H\x01", MsgPackError::Ok);
+      check<JSON_OBJECT_SIZE(0)>("\xDE\x00\x01\xA1H\x01",
+                                 MsgPackError::NoMemory);
+      check<JSON_OBJECT_SIZE(1) + 4>("\xDE\x00\x01\xA1H\x01", MsgPackError::Ok);
     }
     SECTION("{H:1,W:2}") {
-      check<JSON_OBJECT_SIZE(1) + 4>("\x82\xA1H\x01\xA1W\x02",
+      check<JSON_OBJECT_SIZE(1) + 4>("\xDE\x00\x02\xA1H\x01\xA1W\x02",
                                      MsgPackError::NoMemory);
-      check<JSON_OBJECT_SIZE(2) + 8>("\x82\xA1H\x01\xA1W\x02",
+      check<JSON_OBJECT_SIZE(2) + 8>("\xDE\x00\x02\xA1H\x01\xA1W\x02",
+                                     MsgPackError::Ok);
+    }
+  }
+
+  SECTION("map 32") {
+    SECTION("{}") {
+      check<JSON_OBJECT_SIZE(0)>("\xDF\x00\x00\x00\x00", MsgPackError::Ok);
+    }
+    SECTION("{H:1}") {
+      check<JSON_OBJECT_SIZE(0)>("\xDF\x00\x00\x00\x01\xA1H\x01",
+                                 MsgPackError::NoMemory);
+      check<JSON_OBJECT_SIZE(1) + 4>("\xDF\x00\x00\x00\x01\xA1H\x01",
+                                     MsgPackError::Ok);
+    }
+    SECTION("{H:1,W:2}") {
+      check<JSON_OBJECT_SIZE(1) + 4>("\xDF\x00\x00\x00\x02\xA1H\x01\xA1W\x02",
+                                     MsgPackError::NoMemory);
+      check<JSON_OBJECT_SIZE(2) + 8>("\xDF\x00\x00\x00\x02\xA1H\x01\xA1W\x02",
                                      MsgPackError::Ok);
     }
   }
