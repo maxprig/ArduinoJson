@@ -15,7 +15,7 @@ class MsgPackError {
   MsgPackError(bool e) : _code(e ? Ok : Error) {}
 
   operator bool() const {
-    return _code == Ok;
+    return _code != Ok;
   }
 
   friend bool operator==(const MsgPackError& err, Code code) {

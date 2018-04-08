@@ -27,4 +27,8 @@ TEST_CASE("Errors returned by deserializeMsgPack()") {
     check("\xd7", MsgPackError::NotSupported);  // fixext 8
     check("\xd8", MsgPackError::NotSupported);  // fixext 16
   }
+
+  SECTION("unsupported in array") {
+    check("\x91\xc4", MsgPackError::NotSupported);
+  }
 }

@@ -53,10 +53,10 @@ TEST_CASE("deserializeMsgPack(StaticJsonVariant&)") {
   }
 
   SECTION("fixarray") {
-    check<JSON_ARRAY_SIZE(0)>("\x90", MsgPackError::Ok);
-    check<JSON_ARRAY_SIZE(0)>("\x91\x01", MsgPackError::NoMemory);
-    check<JSON_ARRAY_SIZE(1)>("\x91\x01", MsgPackError::Ok);
-    check<JSON_ARRAY_SIZE(1)>("\x92\x01\x02", MsgPackError::NoMemory);
+    check<JSON_ARRAY_SIZE(0)>("\x90", MsgPackError::Ok);                // []
+    check<JSON_ARRAY_SIZE(0)>("\x91\x01", MsgPackError::NoMemory);      // [1]
+    check<JSON_ARRAY_SIZE(1)>("\x91\x01", MsgPackError::Ok);            // [1]
+    check<JSON_ARRAY_SIZE(1)>("\x92\x01\x02", MsgPackError::NoMemory);  // [1,2]
   }
 
   SECTION("array 16") {

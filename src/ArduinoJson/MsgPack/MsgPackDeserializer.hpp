@@ -258,8 +258,8 @@ class MsgPackDeserializer {
   MsgPackError readArray(JsonArray &array, size_t n) {
     for (; n; --n) {
       JsonVariant element;
-      /*MsgPackError err = */ parse(element);
-      // if (err != MsgPackError::Ok) return err;
+      MsgPackError err = parse(element);
+      if (err) return err;
       if (!array.add(element)) return MsgPackError::NoMemory;
     }
     return MsgPackError::Ok;
