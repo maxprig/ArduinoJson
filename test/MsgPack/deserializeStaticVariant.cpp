@@ -74,4 +74,20 @@ TEST_CASE("deserializeMsgPack(StaticJsonVariant&)") {
     check<JSON_ARRAY_SIZE(1)>("\xDD\x00\x00\x00\x02\x01\x02",
                               MsgPackError::NoMemory);
   }
+
+  SECTION("fixmap") {
+    SECTION("{}") {
+      check<JSON_OBJECT_SIZE(0)>("\x80", MsgPackError::Ok);
+    }
+    SECTION("{H:1}") {
+      check<JSON_OBJECT_SIZE(0)>("\x81\xA1H\x01", MsgPackError::NoMemory);
+      check<JSON_OBJECT_SIZE(1) + 4>("\x81\xA1H\x01", MsgPackError::Ok);
+    }
+    SECTION("{H:1,W:2}") {
+      check<JSON_OBJECT_SIZE(1) + 4>("\x82\xA1H\x01\xA1W\x02",
+                                     MsgPackError::NoMemory);
+      check<JSON_OBJECT_SIZE(2) + 8>("\x82\xA1H\x01\xA1W\x02",
+                                     MsgPackError::Ok);
+    }
+  }
 }

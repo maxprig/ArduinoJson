@@ -31,4 +31,9 @@ TEST_CASE("Errors returned by deserializeMsgPack()") {
   SECTION("unsupported in array") {
     check("\x91\xc4", MsgPackError::NotSupported);
   }
+
+  SECTION("unsupported in map") {
+    check("\x81\xc4\x00\xA1H", MsgPackError::NotSupported);
+    check("\x81\xA1H\xc4\x00", MsgPackError::NotSupported);
+  }
 }

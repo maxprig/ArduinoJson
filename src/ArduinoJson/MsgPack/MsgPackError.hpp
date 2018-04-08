@@ -10,9 +10,9 @@ class MsgPackError {
  public:
   enum Code { Ok, Error, NotSupported, NoMemory };
 
-  MsgPackError(Code code) : _code(code) {}
+  MsgPackError() : _code(Ok) {}
 
-  MsgPackError(bool e) : _code(e ? Ok : Error) {}
+  MsgPackError(Code code) : _code(code) {}
 
   operator bool() const {
     return _code != Ok;
