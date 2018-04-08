@@ -51,4 +51,27 @@ TEST_CASE("deserializeMsgPack(StaticJsonVariant&)") {
     check<4>("\xDB\x00\x00\x00\x01H", MsgPackError::Ok);
     check<4>("\xDB\x00\x00\x00\x05Hello", MsgPackError::NoMemory);
   }
+
+  SECTION("fixarray") {
+    check<JSON_ARRAY_SIZE(0)>("\x90", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(0)>("\x91\x01", MsgPackError::NoMemory);
+    check<JSON_ARRAY_SIZE(1)>("\x91\x01", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(1)>("\x92\x01\x02", MsgPackError::NoMemory);
+  }
+
+  SECTION("array 16") {
+    check<JSON_ARRAY_SIZE(0)>("\xDC\x00\x00", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(0)>("\xDC\x00\x01\x01", MsgPackError::NoMemory);
+    check<JSON_ARRAY_SIZE(1)>("\xDC\x00\x01\x01", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(1)>("\xDC\x00\x02\x01\x02", MsgPackError::NoMemory);
+  }
+
+  SECTION("array 32") {
+    check<JSON_ARRAY_SIZE(0)>("\xDD\x00\x00\x00\x00", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(0)>("\xDD\x00\x00\x00\x01\x01",
+                              MsgPackError::NoMemory);
+    check<JSON_ARRAY_SIZE(1)>("\xDD\x00\x00\x00\x01\x01", MsgPackError::Ok);
+    check<JSON_ARRAY_SIZE(1)>("\xDD\x00\x00\x00\x02\x01\x02",
+                              MsgPackError::NoMemory);
+  }
 }

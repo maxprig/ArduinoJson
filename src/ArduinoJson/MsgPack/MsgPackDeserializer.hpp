@@ -42,9 +42,7 @@ class MsgPackDeserializer {
       return false;
     }
 
-    readArray(array, n);
-
-    return MsgPackError::Ok;
+    return readArray(array, n);
   }
 
   MsgPackError parse(JsonObject &object) {
@@ -83,10 +81,7 @@ class MsgPackDeserializer {
       return readString(variant, c & 0x1f);
     }
 
-    if ((c & 0xf0) == 0x90) {
-      readArray(variant, c & 0x0F);
-      return MsgPackError::Ok;
-    }
+    if ((c & 0xf0) == 0x90) return readArray(variant, c & 0x0F);
 
     if ((c & 0xf0) == 0x80) {
       readObject(variant, c & 0x0F);
@@ -172,12 +167,10 @@ class MsgPackDeserializer {
       }
 
       case 0xdc:
-        readArray(variant, readInteger<uint16_t>());
-        return MsgPackError::Ok;
+        return readArray(variant, readInteger<uint16_t>());
 
       case 0xdd:
-        readArray(variant, readInteger<uint32_t>());
-        return MsgPackError::Ok;
+        return readArray(variant, readInteger<uint32_t>());
 
       case 0xde:
         readObject(variant, readInteger<uint16_t>());
@@ -255,18 +248,21 @@ class MsgPackDeserializer {
     return MsgPackError::Ok;
   }
 
-  void readArray(JsonVariant &variant, size_t n) {
+  MsgPackError readArray(JsonVariant &variant, size_t n) {
     JsonArray *array = new (_buffer) JsonArray(_buffer);
+    if (!array) return MsgPackError::NoMemory;
     variant = array;
     return readArray(*array, n);
   }
 
-  void readArray(JsonArray &array, size_t n) {
+  MsgPackError readArray(JsonArray &array, size_t n) {
     for (; n; --n) {
       JsonVariant element;
-      parse(element);
-      array.add(element);
+      /*MsgPackError err = */ parse(element);
+      // if (err != MsgPackError::Ok) return err;
+      if (!array.add(element)) return MsgPackError::NoMemory;
     }
+    return MsgPackError::Ok;
   }
 
   void readObject(JsonVariant &variant, size_t n) {
