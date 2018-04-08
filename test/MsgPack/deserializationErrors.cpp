@@ -36,4 +36,8 @@ TEST_CASE("Errors returned by deserializeMsgPack()") {
     check("\x81\xc4\x00\xA1H", MsgPackError::NotSupported);
     check("\x81\xA1H\xc4\x00", MsgPackError::NotSupported);
   }
+
+  SECTION("integer as key") {
+    check("\x81\x01\xA1H", MsgPackError::NotSupported);
+  }
 }

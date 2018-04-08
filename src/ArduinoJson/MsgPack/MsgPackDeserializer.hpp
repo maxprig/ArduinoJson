@@ -250,10 +250,10 @@ class MsgPackDeserializer {
 
   MsgPackError readArray(JsonArray &array, size_t n) {
     for (; n; --n) {
-      JsonVariant element;
-      MsgPackError err = parse(element);
+      JsonVariant variant;
+      MsgPackError err = parse(variant);
       if (err) return err;
-      if (!array.add(element)) return MsgPackError::NoMemory;
+      if (!array.add(variant)) return MsgPackError::NoMemory;
     }
     return MsgPackError::Ok;
   }
@@ -268,13 +268,14 @@ class MsgPackDeserializer {
   MsgPackError readObject(JsonObject &object, size_t n) {
     for (; n; --n) {
       MsgPackError err;
-      JsonVariant key;
-      err = parse(key);
+      JsonVariant variant;
+      err = parse(variant);
       if (err) return err;
-      JsonVariant value;
-      err = parse(value);
+      const char *key = variant.as<char *>();
+      if (!key) return MsgPackError::NotSupported;
+      err = parse(variant);
       if (err) return err;
-      if (!object.set(key.as<char *>(), value)) return MsgPackError::NoMemory;
+      if (!object.set(key, variant)) return MsgPackError::NoMemory;
     }
     return MsgPackError::Ok;
   }
