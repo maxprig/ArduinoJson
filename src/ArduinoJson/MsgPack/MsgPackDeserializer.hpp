@@ -44,7 +44,7 @@ class MsgPackDeserializer {
 
     readArray(array, n);
 
-    return true;
+    return MsgPackError::Ok;
   }
 
   MsgPackError parse(JsonObject &object) {
@@ -63,7 +63,7 @@ class MsgPackDeserializer {
 
     readObject(object, n);
 
-    return true;
+    return MsgPackError::Ok;
   }
 
   MsgPackError parse(JsonVariant &variant) {
@@ -71,53 +71,53 @@ class MsgPackDeserializer {
 
     if ((c & 0x80) == 0) {
       variant = c;
-      return true;
+      return MsgPackError::Ok;
     }
 
     if ((c & 0xe0) == 0xe0) {
       variant = static_cast<int8_t>(c);
-      return true;
+      return MsgPackError::Ok;
     }
 
     if ((c & 0xe0) == 0xa0) {
       variant = readString(c & 0x1f);
-      return true;
+      return MsgPackError::Ok;
     }
 
     if ((c & 0xf0) == 0x90) {
       readArray(variant, c & 0x0F);
-      return true;
+      return MsgPackError::Ok;
     }
 
     if ((c & 0xf0) == 0x80) {
       readObject(variant, c & 0x0F);
-      return true;
+      return MsgPackError::Ok;
     }
 
     switch (c) {
       case 0xc0:
         variant = static_cast<char *>(0);
-        return true;
+        return MsgPackError::Ok;
 
       case 0xc2:
         variant = false;
-        return true;
+        return MsgPackError::Ok;
 
       case 0xc3:
         variant = true;
-        return true;
+        return MsgPackError::Ok;
 
       case 0xcc:
         variant = readInteger<uint8_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xcd:
         variant = readInteger<uint16_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xce:
         variant = readInteger<uint32_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xcf:
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
@@ -126,19 +126,19 @@ class MsgPackDeserializer {
         readInteger<uint32_t>();
         variant = readInteger<uint32_t>();
 #endif
-        return true;
+        return MsgPackError::Ok;
 
       case 0xd0:
         variant = readInteger<int8_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xd1:
         variant = readInteger<int16_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xd2:
         variant = readInteger<int32_t>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xd3:
 #if ARDUINOJSON_USE_LONG_LONG || ARDUINOJSON_USE_INT64
@@ -147,52 +147,52 @@ class MsgPackDeserializer {
         readInteger<int32_t>();
         variant = readInteger<int32_t>();
 #endif
-        return true;
+        return MsgPackError::Ok;
 
       case 0xca:
         variant = readFloat<float>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xcb:
         variant = readDouble<double>();
-        return true;
+        return MsgPackError::Ok;
 
       case 0xd9: {
         uint8_t n = readInteger<uint8_t>();
         variant = readString(n);
-        return true;
+        return MsgPackError::Ok;
       }
 
       case 0xda: {
         uint16_t n = readInteger<uint16_t>();
         variant = readString(n);
-        return true;
+        return MsgPackError::Ok;
       }
 
       case 0xdb: {
         uint32_t n = readInteger<uint32_t>();
         variant = readString(n);
-        return true;
+        return MsgPackError::Ok;
       }
 
       case 0xdc:
         readArray(variant, readInteger<uint16_t>());
-        return true;
+        return MsgPackError::Ok;
 
       case 0xdd:
         readArray(variant, readInteger<uint32_t>());
-        return true;
+        return MsgPackError::Ok;
 
       case 0xde:
         readObject(variant, readInteger<uint16_t>());
-        return true;
+        return MsgPackError::Ok;
 
       case 0xdf:
         readObject(variant, readInteger<uint32_t>());
-        return true;
+        return MsgPackError::Ok;
 
       default:
-        return false;
+        return MsgPackError::NotSupported;
     }
   }
 

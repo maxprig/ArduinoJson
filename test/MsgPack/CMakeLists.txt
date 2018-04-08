@@ -3,6 +3,7 @@
 # MIT License
 
 add_executable(MsgPackTests
+	deserializationErrors.cpp
 	deserializeArray.cpp
 	deserializeObject.cpp
 	deserializeVariant.cpp

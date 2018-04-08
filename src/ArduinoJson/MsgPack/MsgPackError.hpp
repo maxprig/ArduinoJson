@@ -8,7 +8,7 @@ namespace ArduinoJson {
 
 class MsgPackError {
  public:
-  enum Code { Ok, Error };
+  enum Code { Ok, Error, NotSupported };
 
   MsgPackError(Code code) : _code(code) {}
 
