@@ -249,12 +249,15 @@ class MsgPackDeserializer {
   }
 
   MsgPackError readArray(JsonArray &array, size_t n) {
+    if (_nestingLimit == 0) return MsgPackError::TooDeep;
+    --_nestingLimit;
     for (; n; --n) {
       JsonVariant variant;
       MsgPackError err = parse(variant);
       if (err) return err;
       if (!array.add(variant)) return MsgPackError::NoMemory;
     }
+    ++_nestingLimit;
     return MsgPackError::Ok;
   }
 
@@ -266,6 +269,8 @@ class MsgPackDeserializer {
   }
 
   MsgPackError readObject(JsonObject &object, size_t n) {
+    if (_nestingLimit == 0) return MsgPackError::TooDeep;
+    --_nestingLimit;
     for (; n; --n) {
       MsgPackError err;
       JsonVariant variant;
@@ -277,6 +282,7 @@ class MsgPackDeserializer {
       if (err) return err;
       if (!object.set(key, variant)) return MsgPackError::NoMemory;
     }
+    ++_nestingLimit;
     return MsgPackError::Ok;
   }
 
