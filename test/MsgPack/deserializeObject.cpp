@@ -8,6 +8,14 @@
 TEST_CASE("deserializeMsgPack(JsonObject&)") {
   DynamicJsonObject object;
 
+  SECTION("not an object") {
+    const char* input = "\xA0";
+
+    MsgPackError error = deserializeMsgPack(object, input);
+
+    REQUIRE(error == MsgPackError::NotAnObject);
+  }
+
   SECTION("fixmap") {
     SECTION("empty") {
       const char* input = "\x80";

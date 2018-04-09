@@ -8,7 +8,7 @@ namespace ArduinoJson {
 
 class MsgPackError {
  public:
-  enum Code { Ok, Error, NotSupported, NoMemory, NotAnArray };
+  enum Code { Ok, NotSupported, NoMemory, NotAnArray, NotAnObject };
 
   MsgPackError() {}
 
@@ -44,6 +44,8 @@ class MsgPackError {
         return "NoMemory";
       case NotAnArray:
         return "NotAnArray";
+      case NotAnObject:
+        return "NotAnObject";
       default:
         return "???";
     }

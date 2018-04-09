@@ -14,7 +14,6 @@ TEST_CASE("deserializeMsgPack(JsonArray&)") {
     MsgPackError error = deserializeMsgPack(array, input);
 
     REQUIRE(error == MsgPackError::NotAnArray);
-    REQUIRE(array.size() == 0);
   }
 
   SECTION("fixarray") {

@@ -56,7 +56,7 @@ class MsgPackDeserializer {
     } else if (c == 0xdf) {
       n = readInteger<uint32_t>();
     } else {
-      return MsgPackError::Error;
+      return MsgPackError::NotAnObject;
     }
 
     return readObject(object, n);
