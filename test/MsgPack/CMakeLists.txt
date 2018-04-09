@@ -9,6 +9,7 @@ add_executable(MsgPackTests
 	deserializeVariant.cpp
 	deserializeStaticVariant.cpp
 	doubleToFloat.cpp
+	MsgPackError.cpp
 )
 
 target_link_libraries(MsgPackTests catch)

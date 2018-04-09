@@ -34,7 +34,7 @@ class MsgPackError {
     return err._code != code;
   }
 
-  const char* toString() const {
+  const char* c_str() const {
     switch (_code) {
       case Ok:
         return "Ok";
@@ -52,7 +52,7 @@ class MsgPackError {
   }
 
   friend std::ostream& operator<<(std::ostream& os, const MsgPackError& err) {
-    os << err.toString();
+    os << err.c_str();
     return os;
   }
 
