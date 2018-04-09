@@ -51,13 +51,15 @@ class MsgPackError {
     }
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const MsgPackError& err) {
-    os << err.c_str();
-    return os;
-  }
-
  private:
   Code _code;
 };
+
+#if ARDUINOJSON_ENABLE_STD_STREAM
+inline std::ostream& operator<<(std::ostream& os, const MsgPackError& err) {
+  os << err.c_str();
+  return os;
+}
+#endif
 
 }  // namespace ArduinoJson
