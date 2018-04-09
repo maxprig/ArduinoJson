@@ -39,7 +39,7 @@ class MsgPackDeserializer {
     } else if (c == 0xdd) {
       n = readInteger<uint32_t>();
     } else {
-      return MsgPackError::Error;
+      return MsgPackError::NotAnArray;
     }
 
     return readArray(array, n);

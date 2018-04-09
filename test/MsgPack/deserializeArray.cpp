@@ -8,6 +8,15 @@
 TEST_CASE("deserializeMsgPack(JsonArray&)") {
   DynamicJsonArray array;
 
+  SECTION("not an array") {
+    const char* input = "\xA0";
+
+    MsgPackError error = deserializeMsgPack(array, input);
+
+    REQUIRE(error == MsgPackError::NotAnArray);
+    REQUIRE(array.size() == 0);
+  }
+
   SECTION("fixarray") {
     SECTION("empty") {
       const char* input = "\x90";
